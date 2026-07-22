@@ -1,47 +1,69 @@
-const productos = ["Monitor", "Teclado", "Mouse", "Audifonos", "Case"];
+// Defino la clase
+class Producto {
+    constructor(id, nombre, precio, stock) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.stock = stock;
+    }
 
-function verTodo(lista) {
-    console.log("--- Lista de productos ---");
-    for (let produc of lista) {
-        console.log("Producto: " + produc);
+    // Modifica e informa el estado del objeto
+    aplicarDescuento(porcentaje) {
+        let descuento = (this.precio * porcentaje) / 100;
+        this.precio = this.precio - descuento;
+        alert("Descuento aplicado a " + this.nombre + " Precio actualizado : $" + this.precio);
     }
 }
 
-let buscar = prompt("¿Qué producto querés buscar?");
+//  Objetos reales y los guardo en el array de inventario
+const productos = [
+    new Producto(1, "Monitor", 200, 5),
+    new Producto(2, "Teclado", 50, 10),
+    new Producto(3, "Mouse", 30, 8),
+    new Producto(4, "Audifonos", 80, 4)
+];
+
+// Función para recorrer la lista de objetos y mostrarlos en consola
+function verTodo(lista) {
+    console.log("--- Lista de Productos en Stock ---");
+    for (let prod of lista) {
+        console.log("ID: " + prod.id + " | " + prod.nombre + " | Precio: $" + prod.precio + " | Stock: " + prod.stock);
+    }
+}
+
+// Flujo interactivo 
+
+verTodo(productos);
+
+// Busco un producto por su nombre
+let buscar = prompt("Qué producto quieres buscar en el inventario? (Monitor, Teclado, Mouse, Audifonos)");
 
 if (buscar) {
-    let estaEnLista = productos.includes(buscar);
+    let encontrado = productos.find(p => p.nombre.toLowerCase() === buscar.toLowerCase());
 
-    if (estaEnLista) {
-        let pos = productos.indexOf(buscar);
-        alert("Sí está! Está en la posición: " + pos);
+    if (encontrado) {
+        alert("Sí está " + encontrado.nombre + " vale $" + encontrado.precio + " y quedan " + encontrado.stock + " unidades.");
         
-        let nuevo = prompt("Ingresa el nuevo nombre para cambiarlo:");
-        if (nuevo) {
-            productos.splice(pos, 1, nuevo);
-            alert("Producto cambiado con éxito");
+        let respuestaDescuento = confirm("Quieres aplicarle un 10% de descuento a este producto?");
+        if (respuestaDescuento) {
+            encontrado.aplicarDescuento(10); 
         }
     } else {
-        alert("Ese producto no está en el inventario");
+        alert("Ese producto no está en el inventario.");
     }
+} 
+// Agregar un nuevo producto 
+let nuevoNombre = prompt("Ingrese el nombre de un nuevo producto para agregar:");
+if (nuevoNombre) {
+    let nuevoPrecio = parseInt(prompt("Ingrese el precio del producto:"));
+    let nuevoStock = parseInt(prompt("Ingrese el stock disponible:"));
+
+    // New para crear el objeto desde la clase y push para meterlo al array
+    let nuevoProducto = new Producto(productos.length + 1, nuevoNombre, nuevoPrecio, nuevoStock);
+    productos.push(nuevoProducto);
+    
+    alert(nuevoProducto.nombre + "Fue agregado con éxito!");
 }
 
-let productoFinal = prompt("Ingresa un nuevo producto para agregar al final del stock:");
-if (productoFinal) {
-    productos.push(productoFinal);
-    alert("¡" + productoFinal + " agregado al final!");
-}
-
-let productoUrgente = prompt("Ingresa un producto con alta prioridad (se agregará al principio):");
-if (productoUrgente) {
-    productos.unshift(productoUrgente);
-    alert("¡" + productoUrgente + " agregado al principio!");
-}
-
-let confirmarBorrado = confirm("¿Deseas eliminar el último producto de la lista para empaquetarlo?");
-if (confirmarBorrado) {
-    let borrado = productos.pop();
-    alert("Se eliminó este producto: " + borrado);
-}
-
+// Verificación final en consola
 verTodo(productos);

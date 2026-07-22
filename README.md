@@ -1,2 +1,2 @@
-Simulador de calculadoras usando funciones
-Entrega N3 
+Simulador utilizando clases
+Entrega N5
