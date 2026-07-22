@@ -15,7 +15,7 @@ class Producto {
     }
 }
 
-//  Objetos reales y los guardo en el array de inventario
+//  Objetos reales y los guardo en un array
 const productos = [
     new Producto(1, "Monitor", 200, 5),
     new Producto(2, "Teclado", 50, 10),
