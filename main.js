@@ -1,69 +1,91 @@
-// Defino la clase
-class Producto {
-    constructor(id, nombre, precio, stock) {
+class Jugador {
+    constructor(id, nombre, posicion, goles, asistencias) {
         this.id = id;
         this.nombre = nombre;
-        this.precio = precio;
-        this.stock = stock;
-    }
-
-    // Modifica e informa el estado del objeto
-    aplicarDescuento(porcentaje) {
-        let descuento = (this.precio * porcentaje) / 100;
-        this.precio = this.precio - descuento;
-        alert("Descuento aplicado a " + this.nombre + " Precio actualizado : $" + this.precio);
+        this.posicion = posicion;
+        this.goles = goles;
+        this.asistencias = asistencias;
     }
 }
 
-//  Objetos reales y los guardo en el array de inventario
-const productos = [
-    new Producto(1, "Monitor", 200, 5),
-    new Producto(2, "Teclado", 50, 10),
-    new Producto(3, "Mouse", 30, 8),
-    new Producto(4, "Audifonos", 80, 4)
+const plantilla = [
+    new Jugador(1, "Lamine Yamal", "Delantero", 14, 16),
+    new Jugador(2, "Robert Lewandowski", "Delantero", 22, 5),
+    new Jugador(3, "Raphinha", "Delantero", 18, 12),
+    new Jugador(4, "Pedro González", "Mediocampista", 7, 10),
+    new Jugador(5, "Pau Cubarsí", "Defensa", 1, 2),
+    new Jugador(6, "Joan García", "Portero", 0, 0)
 ];
 
-// Función para recorrer la lista de objetos y mostrarlos en consola
-function verTodo(lista) {
-    console.log("--- Lista de Productos en Stock ---");
-    for (let prod of lista) {
-        console.log("ID: " + prod.id + " | " + prod.nombre + " | Precio: $" + prod.precio + " | Stock: " + prod.stock);
-    }
-}
-
-// Flujo interactivo 
-
-verTodo(productos);
-
-// Busco un producto por su nombre
-let buscar = prompt("Qué producto quieres buscar en el inventario? (Monitor, Teclado, Mouse, Audifonos)");
-
-if (buscar) {
-    let encontrado = productos.find(p => p.nombre.toLowerCase() === buscar.toLowerCase());
-
-    if (encontrado) {
-        alert("Sí está " + encontrado.nombre + " vale $" + encontrado.precio + " y quedan " + encontrado.stock + " unidades.");
+// Opciones del menú ordenadas en un objeto
+const acciones = {
+    // Método .find()
+    "1": () => {
+        let busqueda = prompt("Nombre del jugador:");
+        if (!busqueda) return;
         
-        let respuestaDescuento = confirm("Quieres aplicarle un 10% de descuento a este producto?");
-        if (respuestaDescuento) {
-            encontrado.aplicarDescuento(10); 
+        let encontrado = plantilla.find(j => j.nombre.toLowerCase().includes(busqueda.toLowerCase()));
+        if (encontrado) {
+            console.log("Resultado de búsqueda (find):", encontrado);
+            alert("¡Jugador encontrado!\n" + encontrado.nombre + " (" + encontrado.posicion + ")\nGoles: " + encontrado.goles);
+        } else {
+            alert("No se encontró ningún jugador con ese nombre.");
         }
-    } else {
-        alert("Ese producto no está en el inventario.");
-    }
-} 
-// Agregar un nuevo producto 
-let nuevoNombre = prompt("Ingrese el nombre de un nuevo producto para agregar:");
-if (nuevoNombre) {
-    let nuevoPrecio = parseInt(prompt("Ingrese el precio del producto:"));
-    let nuevoStock = parseInt(prompt("Ingrese el stock disponible:"));
+    },
 
-    // New para crear el objeto desde la clase y push para meterlo al array
-    let nuevoProducto = new Producto(productos.length + 1, nuevoNombre, nuevoPrecio, nuevoStock);
-    productos.push(nuevoProducto);
-    
-    alert(nuevoProducto.nombre + "Fue agregado con éxito!");
+    // Método .filter()
+    "2": () => {
+        let pos = prompt("Posición (Delantero, Mediocampista, Defensa, Portero):");
+        if (!pos) return;
+
+        let filtrados = plantilla.filter(j => j.posicion.toLowerCase() === pos.toLowerCase());
+        if (filtrados.length > 0) {
+            console.log("Resultado de filtrado por posición :", filtrados);
+            alert(filtrados.map(j => "• " + j.nombre + " (" + j.goles + " goles)").join("\n"));
+        } else {
+            alert("No hay jugadores registrados en esa posición.");
+        }
+    },
+
+    // Método .reduce()
+    "3": () => {
+        let totalGoles = plantilla.reduce((acc, j) => acc + j.goles, 0);
+        console.log("Cálculo total de goles : " + totalGoles);
+        alert(" Total de goles anotados por la plantilla: " + totalGoles);
+    },
+
+    // Método .map()
+    "4": () => {
+        let resumen = plantilla.map(j => "• " + j.nombre + " [" + j.posicion + "] - " + j.goles + " Goles");
+        console.log("Resumen transformado de la plantilla :\n" + resumen.join("\n"));
+        alert("El resumen completo de la plantilla se imprimió en la consola.");
+    }
+};
+
+// Interacción del simulador
+function iniciarSimulador() {
+    let corriendo = true;
+
+    while (corriendo) {
+        let opcion = prompt(
+            "=== SIMULADOR BARÇA 25/26 ===\n\n" +
+            "1. Buscar jugador por nombre\n" +
+            "2. Filtrar por posición\n" +
+            "3. Total de goles del equipo\n" +
+            "4. Ver resumen de la plantilla\n" +
+            "5. Salir"
+        );
+
+        if (opcion === "5" || opcion === null) {
+            corriendo = false;
+            alert("¡Simulador finalizado!");
+        } else if (acciones[opcion]) {
+            acciones[opcion]();
+        } else {
+            alert("Opción no válida. Por favor, ingresá un número del 1 al 5.");
+        }
+    }
 }
 
-// Verificación final en consola
-verTodo(productos);
+// Ejecución del simulador
+iniciarSimulador();
