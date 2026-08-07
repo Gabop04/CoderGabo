@@ -1,0 +1,114 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #121824;
+    color: #ffffff;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+h1, h2 {
+    margin-bottom: 15px;
+    color: #ffcc00;
+}
+
+form, #buscador {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Aplicado a input, select y button por igual */
+input, select, button {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #333;
+    font-size: 14px;
+}
+
+/* Estilo unificado para las casillas de texto y el desplegable */
+input, select {
+    background-color: #1a2332;
+    color: #ffffff;
+    flex: 1;
+    outline: none;
+}
+
+/* Opciones del menú desplegable */
+select option {
+    background-color: #1a2332;
+    color: #ffffff;
+}
+
+button {
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #004999;
+}
+
+#feedback {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    display: none;
+    font-weight: bold;
+}
+
+#feedback.exito {
+    display: block;
+    background-color: #1e7e34;
+    color: #fff;
+}
+
+#feedback.eliminado {
+    display: block;
+    background-color: #bd2130;
+    color: #fff;
+}
+
+#contenedor-jugadores {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+.card {
+    background-color: #1a2332;
+    border-left: 4px solid #ffcc00;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.card h3 {
+    margin-bottom: 5px;
+    color: #ffffff;
+}
+
+.card p {
+    color: #ccc;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.btn-eliminar {
+    background-color: #dc3545;
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.btn-eliminar:hover {
+    background-color: #a71d2a;
+}

@@ -3,10 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entregas Js</title>
-    <script src="main.js" defer></script>
+    <title>Simulador Jugadores De Fútbol</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/main.js" defer></script>
 </head>
 <body>
-    <h1>Probando JavaScript</h1>
+    <h1>Simulador Jugadores De Fútbol</h1>
+    <form id="form-jugador">
+        <input type="text" id="nombre" placeholder="Nombre del jugador">
+        <select id="posicion">
+            <option value="" disabled selected>Selecciona posición</option>
+            <option value="Portero">Portero</option>
+            <option value="Defensa">Defensa</option>
+            <option value="Mediocampista">Mediocampista</option>
+            <option value="Delantero">Delantero</option>
+        </select>
+        <input type="number" id="goles" placeholder="Goles" min="0">
+        <button type="submit" id="btn-agregar">Agregar Jugador</button>
+    </form>
+    <input type="text" id="buscador" placeholder="Buscar por nombre o posición...">
+    <div id="avisos"></div>
+    <h2>Plantilla</h2>
+    <div id="contenedor-jugadores"></div>
 </body>
 </html>
