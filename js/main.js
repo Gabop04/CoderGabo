@@ -5,7 +5,8 @@ const plantilla = [
     { id: 4, nombre: "Joan García", posicion: "Portero", goles: 0 }
 ];
 
-let jugadores = [...plantilla];
+// Carga de localStorage utilizando ??
+let jugadores = JSON.parse(localStorage.getItem("jugadores")) ?? [...plantilla];
 
 // Selección de elementos
 const formJugador = document.getElementById("form-jugador");
@@ -26,19 +27,22 @@ function renderizarPlantilla(lista) {
         generarCardJugador(jugador);
     });
 }
-// Uso createElement y appendChild
+
 function generarCardJugador(jugador) {
+    // Desestructuración del objeto jugador
+    const { id, nombre, posicion, goles } = jugador;
+
     const card = document.createElement("div");
     card.className = "card";
 
     const j = document.createElement("h3");
-    j.textContent = jugador.nombre;
+    j.textContent = nombre;
 
     const pPosicion = document.createElement("p");
-    pPosicion.textContent = "Posición: " + jugador.posicion;
+    pPosicion.textContent = "Posición: " + posicion;
 
     const pGoles = document.createElement("p");
-    pGoles.textContent = "Goles: " + jugador.goles;
+    pGoles.textContent = "Goles: " + goles;
 
     const btnEliminar = document.createElement("button");
     btnEliminar.className = "btn-eliminar";
@@ -46,7 +50,7 @@ function generarCardJugador(jugador) {
 
     // Evento de clic sobre el botón creado
     btnEliminar.addEventListener("click", () => {
-        eliminarJugador(jugador.id);
+        eliminarJugador(id);
     });
 
     // Ensamblar la tarjeta
@@ -89,6 +93,7 @@ function validarFormulario() {
     }
     return true;
 }
+
 // Agrega jugador a la lista
 function generarJugador() {
     const nombre = document.getElementById("nombre").value.trim();
@@ -101,26 +106,39 @@ function generarJugador() {
         goles: goles
     };
     jugadores.push(nuevoJugador);
+
+    // Guardar en localstorage
+    localStorage.setItem("jugadores", JSON.stringify(jugadores));
+
     renderizarPlantilla(jugadores);
     avisos.className = "exito";
     avisos.textContent = "¡Jugador " + nombre + " agregado con éxito!";
     formJugador.reset();
 }
+
 // Eliminar jugador por id
 function eliminarJugador(id) {
-    const jugador = jugadores.find(j => j.id === id);
+    // Encadenamiento opcional 
+    const jugadorEncontrado = jugadores.find(j => j.id === id);
+    const nombreBorrado = jugadorEncontrado?.nombre;
+
     jugadores = jugadores.filter(j => j.id !== id);
+
+    // Guardar en localstorage
+    localStorage.setItem("jugadores", JSON.stringify(jugadores));
+
     const termino = inputBuscador.value.toLowerCase();
     const filtrados = jugadores.filter(j =>
         j.nombre.toLowerCase().includes(termino) ||
         j.posicion.toLowerCase().includes(termino)
     );
     renderizarPlantilla(filtrados);
-    if (jugador) {
-        avisos.className = "eliminado";
-        avisos.textContent = "Jugador " + jugador.nombre + " eliminado.";
-    }
+
+    // Operador ternario para el aviso
+    avisos.className = "eliminado";
+    avisos.textContent = nombreBorrado ? "Jugador " + nombreBorrado + " eliminado." : "Jugador eliminado.";
 }
+
 // Evento Submit del formulario
 formJugador.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -128,6 +146,7 @@ formJugador.addEventListener("submit", (e) => {
         generarJugador();
     }
 });
+
 // Evento de teclado para filtrar
 inputBuscador.addEventListener("input", () => {
     const termino = inputBuscador.value.toLowerCase();
