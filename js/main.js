@@ -5,14 +5,37 @@ const plantilla = [
     { id: 4, nombre: "Joan García", posicion: "Portero", goles: 0 }
 ];
 
-// Carga de localStorage utilizando ??
-let jugadores = JSON.parse(localStorage.getItem("jugadores")) ?? [...plantilla];
+let jugadores = [];
 
-// Selección de elementos
+// Selección de elementos del DOM
 const formJugador = document.getElementById("form-jugador");
 const inputBuscador = document.getElementById("buscador");
 const contenedorJugadores = document.getElementById("contenedor-jugadores");
 const avisos = document.getElementById("avisos");
+
+// Control de errores con try, catch, finally al cargar 
+function cargarDatosIniciales() {
+    try {
+        const datosStorage = localStorage.getItem("jugadores");
+        // Operador ?? para asignar si no hay nada guardado
+        jugadores = datosStorage ? JSON.parse(datosStorage) : [...plantilla];
+    } catch (error) {
+        console.error("Error al leer los datos:", error);
+        // Si hay error, restauramos la plantilla base en el catch
+        jugadores = [...plantilla];
+        avisos.className = "eliminado";
+        avisos.textContent = "Error al cargar los datos guardados. Se restauró la plantilla base.";
+    } finally {
+        // El bloque finally se ejecuta siempre
+        renderizarPlantilla(jugadores);
+    }
+}
+
+// Temporizador asíncrono con setTimeout()
+setTimeout(() => {
+    avisos.className = "exito";
+    avisos.textContent = "Notificación: Mercado de pases abierto.";
+}, 3000);
 
 // Renderizar lista completa de jugadores
 function renderizarPlantilla(lista) {
@@ -71,6 +94,7 @@ function validarFormulario() {
     const goles = document.getElementById("goles").value;
     const listaErrores = [];
     const soloLetras = /^[a-záéíóúñ\s]+$/i;
+
     if (!nombre || !soloLetras.test(nombre)) {
         listaErrores.push("Ingrese un nombre válido (solo letras).");
     }
@@ -80,6 +104,7 @@ function validarFormulario() {
     if (goles === "" || goles < 0) {
         listaErrores.push("Ingrese una cantidad de goles correcta (0 o mayor).");
     }
+
     if (listaErrores.length > 0) {
         avisos.className = "eliminado";
         const ul = document.createElement("ul");
@@ -99,12 +124,14 @@ function generarJugador() {
     const nombre = document.getElementById("nombre").value.trim();
     const posicion = document.getElementById("posicion").value;
     const goles = parseInt(document.getElementById("goles").value);
+
     const nuevoJugador = {
         id: Date.now(),
         nombre: nombre,
         posicion: posicion,
         goles: goles
     };
+
     jugadores.push(nuevoJugador);
 
     // Guardar en localstorage
@@ -157,4 +184,5 @@ inputBuscador.addEventListener("input", () => {
     renderizarPlantilla(filtrados);
 });
 
-renderizarPlantilla(jugadores);
+// Ejecución inicial
+cargarDatosIniciales();
