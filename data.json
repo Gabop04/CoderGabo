@@ -1,0 +1,6 @@
+[
+  { "id": 1, "nombre": "Lamine Yamal", "posicion": "Delantero", "goles": 16 },
+  { "id": 2, "nombre": "Robert Lewandowski", "posicion": "Delantero", "goles": 14 },
+  { "id": 3, "nombre": "Pedro González", "posicion": "Mediocampista", "goles": 2 },
+  { "id": 4, "nombre": "Joan García", "posicion": "Portero", "goles": 0 }
+]

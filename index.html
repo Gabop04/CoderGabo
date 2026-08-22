@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador Jugadores De Fútbol</title>
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/main.js" defer></script>
 </head>
 <body>
     <h1>Simulador Jugadores De Fútbol</h1>
@@ -22,8 +21,11 @@
         <button type="submit" id="btn-agregar">Agregar Jugador</button>
     </form>
     <input type="text" id="buscador" placeholder="Buscar por nombre o posición...">
-    <div id="avisos"></div>
     <h2>Plantilla</h2>
     <div id="contenedor-jugadores"></div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/jugador.js"></script>
+    <script src="js/gestorPlantilla.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

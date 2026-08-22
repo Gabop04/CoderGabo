@@ -1,41 +1,21 @@
-const plantilla = [
-    { id: 1, nombre: "Lamine Yamal", posicion: "Delantero", goles: 14 },
-    { id: 2, nombre: "Robert Lewandowski", posicion: "Delantero", goles: 22 },
-    { id: 3, nombre: "Pedro González", posicion: "Mediocampista", goles: 7 },
-    { id: 4, nombre: "Joan García", posicion: "Portero", goles: 0 }
-];
-
-let jugadores = [];
-
+const gestor = new GestorPlantilla();
 // Selección de elementos del DOM
 const formJugador = document.getElementById("form-jugador");
 const inputBuscador = document.getElementById("buscador");
 const contenedorJugadores = document.getElementById("contenedor-jugadores");
-const avisos = document.getElementById("avisos");
-
-// Control de errores con try, catch, finally al cargar 
-function cargarDatosIniciales() {
-    try {
-        const datosStorage = localStorage.getItem("jugadores");
-        // Operador ?? para asignar si no hay nada guardado
-        jugadores = datosStorage ? JSON.parse(datosStorage) : [...plantilla];
-    } catch (error) {
-        console.error("Error al leer los datos:", error);
-        // Si hay error, restauramos la plantilla base en el catch
-        jugadores = [...plantilla];
-        avisos.className = "eliminado";
-        avisos.textContent = "Error al cargar los datos guardados. Se restauró la plantilla base.";
-    } finally {
-        // El bloque finally se ejecuta siempre
-        renderizarPlantilla(jugadores);
+// Carga inicial 
+async function cargarApp() {
+    contenedorJugadores.innerHTML = "<p>Cargando plantilla...</p>";
+    const respuesta = await gestor.cargarDatosIniciales();
+    if (!respuesta.exito) {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: respuesta.mensaje
+        });
     }
+    renderizarPlantilla(gestor.jugadores);
 }
-
-// Temporizador asíncrono con setTimeout()
-setTimeout(() => {
-    avisos.className = "exito";
-    avisos.textContent = "Notificación: Mercado de pases abierto.";
-}, 3000);
 
 // Renderizar lista completa de jugadores
 function renderizarPlantilla(lista) {
@@ -54,66 +34,57 @@ function renderizarPlantilla(lista) {
 function generarCardJugador(jugador) {
     // Desestructuración del objeto jugador
     const { id, nombre, posicion, goles } = jugador;
-
     const card = document.createElement("div");
     card.className = "card";
-
     const j = document.createElement("h3");
     j.textContent = nombre;
-
     const pPosicion = document.createElement("p");
     pPosicion.textContent = "Posición: " + posicion;
-
     const pGoles = document.createElement("p");
     pGoles.textContent = "Goles: " + goles;
-
     const btnEliminar = document.createElement("button");
     btnEliminar.className = "btn-eliminar";
     btnEliminar.textContent = "Eliminar";
-
-    // Evento de clic sobre el botón creado
+    // Evento sobre el botón eliminar
     btnEliminar.addEventListener("click", () => {
         eliminarJugador(id);
     });
-
-    // Ensamblar la tarjeta
+    // Hace la tarjeta del jugador
     card.appendChild(j);
     card.appendChild(pPosicion);
     card.appendChild(pGoles);
     card.appendChild(btnEliminar);
-
     contenedorJugadores.appendChild(card);
 }
 
 // Validar formulario 
 function validarFormulario() {
-    avisos.innerHTML = "";
-    avisos.className = "";
     const nombre = document.getElementById("nombre").value.trim();
     const posicion = document.getElementById("posicion").value;
     const goles = document.getElementById("goles").value;
-    const listaErrores = [];
     const soloLetras = /^[a-záéíóúñ\s]+$/i;
-
     if (!nombre || !soloLetras.test(nombre)) {
-        listaErrores.push("Ingrese un nombre válido (solo letras).");
+        Swal.fire({
+            icon: "warning",
+            title: "Nombre inválido",
+            text: "Ingrese un nombre válido (solo letras)."
+        });
+        return false;
     }
     if (!posicion) {
-        listaErrores.push("Seleccione una posición.");
+        Swal.fire({
+            icon: "warning",
+            title: "Falta la posición",
+            text: "Por favor seleccione una posición."
+        });
+        return false;
     }
     if (goles === "" || goles < 0) {
-        listaErrores.push("Ingrese una cantidad de goles correcta (0 o mayor).");
-    }
-
-    if (listaErrores.length > 0) {
-        avisos.className = "eliminado";
-        const ul = document.createElement("ul");
-        listaErrores.forEach(error => {
-            const li = document.createElement("li");
-            li.textContent = error;
-            ul.appendChild(li);
+        Swal.fire({
+            icon: "warning",
+            title: "Goles inválidos",
+            text: "Ingrese una cantidad de goles correcta (0 o mayor)."
         });
-        avisos.appendChild(ul);
         return false;
     }
     return true;
@@ -124,65 +95,44 @@ function generarJugador() {
     const nombre = document.getElementById("nombre").value.trim();
     const posicion = document.getElementById("posicion").value;
     const goles = parseInt(document.getElementById("goles").value);
+    const nuevoJugador = new Jugador(Date.now(), nombre, posicion, goles);
+    gestor.agregarJugador(nuevoJugador);
+    renderizarPlantilla(gestor.jugadores);
+    Swal.fire({
+        icon: "success",
+        title: "¡Jugador agregado!",
+        text: `Jugador ${nombre} agregado con éxito a la plantilla.`,
+        timer: 2000,
+        showConfirmButton: false
+    });
 
-    const nuevoJugador = {
-        id: Date.now(),
-        nombre: nombre,
-        posicion: posicion,
-        goles: goles
-    };
-
-    jugadores.push(nuevoJugador);
-
-    // Guardar en localstorage
-    localStorage.setItem("jugadores", JSON.stringify(jugadores));
-
-    renderizarPlantilla(jugadores);
-    avisos.className = "exito";
-    avisos.textContent = "¡Jugador " + nombre + " agregado con éxito!";
     formJugador.reset();
 }
-
 // Eliminar jugador por id
 function eliminarJugador(id) {
-    // Encadenamiento opcional 
-    const jugadorEncontrado = jugadores.find(j => j.id === id);
-    const nombreBorrado = jugadorEncontrado?.nombre;
-
-    jugadores = jugadores.filter(j => j.id !== id);
-
-    // Guardar en localstorage
-    localStorage.setItem("jugadores", JSON.stringify(jugadores));
-
-    const termino = inputBuscador.value.toLowerCase();
-    const filtrados = jugadores.filter(j =>
-        j.nombre.toLowerCase().includes(termino) ||
-        j.posicion.toLowerCase().includes(termino)
-    );
+    const jugadorEliminado = gestor.eliminarJugador(id);
+    const nombreBorrado = jugadorEliminado?.nombre;
+    const filtrados = gestor.filtrarJugadores(inputBuscador.value);
     renderizarPlantilla(filtrados);
-
-    // Operador ternario para el aviso
-    avisos.className = "eliminado";
-    avisos.textContent = nombreBorrado ? "Jugador " + nombreBorrado + " eliminado." : "Jugador eliminado.";
+    Swal.fire({
+        icon: "info",
+        title: "Jugador eliminado",
+        text: nombreBorrado ? `Se eliminó a ${nombreBorrado}.` : "Jugador eliminado.",
+        timer: 2000,
+        showConfirmButton: false
+    });
 }
-
-// Evento Submit del formulario
+// Evento formulario
 formJugador.addEventListener("submit", (e) => {
     e.preventDefault();
     if (validarFormulario()) {
         generarJugador();
     }
 });
-
-// Evento de teclado para filtrar
+// Evento para filtrar
 inputBuscador.addEventListener("input", () => {
-    const termino = inputBuscador.value.toLowerCase();
-    const filtrados = jugadores.filter(j =>
-        j.nombre.toLowerCase().includes(termino) ||
-        j.posicion.toLowerCase().includes(termino)
-    );
+    const filtrados = gestor.filtrarJugadores(inputBuscador.value);
     renderizarPlantilla(filtrados);
 });
-
-// Ejecución inicial
-cargarDatosIniciales();
+// Ejecución
+cargarApp();
